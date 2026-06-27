@@ -620,6 +620,9 @@ do
   vim.pack.add { gh 'j-hui/fidget.nvim' }
   require('fidget').setup {}
 
+  -- Schema catalog (JSON Schema Store) used by yamlls below for validation/completion.
+  vim.pack.add { gh 'b0o/SchemaStore.nvim' }
+
   --  This function gets run when an LSP attaches to a particular buffer.
   --    That is to say, every time a new file is opened that is associated with
   --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -709,6 +712,17 @@ do
 
     -- Markdown (used for Mermaid diagrams too)
     marksman = {},
+
+    -- Config formats
+    yamlls = { -- YAML, with SchemaStore-provided schemas
+      settings = {
+        yaml = {
+          schemaStore = { enable = false, url = '' },
+          schemas = require('schemastore').yaml.schemas(),
+        },
+      },
+    },
+    taplo = {}, -- TOML (LSP + formatting)
 
     stylua = {}, -- Used to format Lua code
 
@@ -822,6 +836,7 @@ do
       json = { 'prettierd', 'prettier', stop_after_first = true },
       yaml = { 'prettierd', 'prettier', stop_after_first = true },
       markdown = { 'prettierd', 'prettier', stop_after_first = true },
+      toml = { 'taplo' },
     },
   }
 
@@ -927,7 +942,7 @@ do
   local parsers = {
     'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'query', 'vim', 'vimdoc',
     'markdown', 'markdown_inline', 'mermaid', -- markdown + mermaid diagrams
-    'css', 'javascript', 'typescript', 'tsx', 'json', 'yaml', 'toml', -- web/config
+    'css', 'javascript', 'typescript', 'tsx', 'json', 'yaml', 'toml', 'ini', -- web/config
     'python', 'go', 'gomod', 'rust', 'cpp', -- languages
   }
   require('nvim-treesitter').install(parsers)
